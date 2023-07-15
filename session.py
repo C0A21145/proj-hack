@@ -2,6 +2,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 
 class Session:
     def __init__(self, cookie):
@@ -66,13 +67,15 @@ class Session:
         self.cookie_session_id = new_session_id
 
         try:
-            sql = "select session_id from user_id'" + username + "'"
+            sql = "select session_id from Session where user_id = '" + username + "'"
             self.cursor.execute(sql)
-            self.connection.commit()
-
-            sql = "update Session set session_id = '" + new_session_id + "' where user_id = '" + username + "'"
-            self.cursor.execute(sql)
-            self.connection.commit()
+            rows = self.cursor.fetchall()
+            if rows[0][0] == self.cookie_session_id:
+                pass
+            else:
+                sql = "update Session set session_id = '" + new_session_id + "' where user_id = '" + username + "'"
+                self.cursor.execute(sql)
+                self.connection.commit()
         except:
             # SQLに保存
             sql = "insert into Session (`user_id`, `session_id`) values ('" + username + "', '" + new_session_id + "')"

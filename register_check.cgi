@@ -3,6 +3,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
 #フォームのデータ取得
@@ -21,8 +22,8 @@ ccsn = form.getfirst('credit_card_security_number')
 #データベース名など自分のものに変更
 connection = MySQLdb.connect(
 	host='localhost',
-	user='user1',
-	passwd='passwordA1!',
+	user='akinori',
+	passwd='P@ssw0rd',
 	db='EC',
 	charset='utf8'
 )
@@ -63,7 +64,7 @@ if p_check and m_check:
 	    <head>
 		<meta charset="utf-8">
 		<title>登録内容の確認</title>
-		
+
 	    </head>
 
 	    <body>
@@ -77,13 +78,13 @@ if p_check and m_check:
 		mail_address = %s<br>
 		credit_card_number = %s<br>
 		credit_card_security_number = %s<br>
-		
+
 		<form action="./register_comp.cgi" method="post"><div>
 		   <input type="hidden" name="first_name" size="60" value=%s><br>
 		   <input type="hidden" name="last_name" size="60" value=%s><br>
 		   <input type="hidden" name="password" size="60" minlength="4" maxlength="22" value=%s><br>
 		   <input type="hidden" name="post_code" size="8" maxlength="8" value=%s><br>
-		   
+
 		   <input type="hidden" name="address" size="60" value=%s><br>
 		   <input type="hidden" name="phone_number" size="15" maxlength="15" value=%s><br>
 		   <input type="hidden" name="mail_address" size="60" value=%s><br>
@@ -95,7 +96,7 @@ if p_check and m_check:
 	    </body>
 	</html>
 	'''%(first_name, last_name, password, post_code, address, phone, email, ccn, ccsn, first_name, last_name, password, post_code, address, phone, email, ccn, ccsn)
-	
+
 else:
 	htmlText = '''
 	<!DOCTYPE html>
@@ -107,10 +108,10 @@ else:
 	    <body>
 	        %s
 	        再入力またはログインしてください。<br>
-	        
+
 	    <! 登録画面(register,cgi)へ ->
 	    <button type=“button” onclick="location.href='./register.cgi'">再入力</button>
-	    
+
 	    <! ログイン画面(login.cgi)へ ->
 	    <button type=“button” onclick="location.href='./login.cgi'">ログイン</button>
 	    </body>

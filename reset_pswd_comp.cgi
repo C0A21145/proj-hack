@@ -4,7 +4,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
-
+import session
 #----------------------------------------------------------------
 
 #フォームのデータ取得
@@ -20,12 +20,12 @@ elif (password != ch_password):
     not_match = 1
 
 connection = MySQLdb.connect(
-		host='localhost',
-		user='user1',
-		passwd='passwordA1!',
-		db='EC',
-		charset='utf8'
-	)
+	host='localhost',
+	user='akinori',
+	passwd='P@ssw0rd',
+	db='EC',
+	charset='utf8'
+)
 cursor = connection.cursor()
 
 #----------------------------------------------------------------

@@ -3,6 +3,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
 
@@ -25,7 +26,7 @@ htmlText = '''
 		<input type="submit" name="submit" value="送信">
 	</form>
     <body>
-    
+
     </body>
 </html>
 '''

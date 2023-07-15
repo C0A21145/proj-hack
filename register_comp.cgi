@@ -3,6 +3,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
 #フォームのデータ取得
@@ -18,11 +19,10 @@ email = form.getfirst('mail_address')
 ccn = form.getfirst('credit_card_number')
 ccsn = form.getfirst('credit_card_security_number')
 
-#データベース名など自分のものに変更
 connection = MySQLdb.connect(
 	host='localhost',
-	user='user1',
-	passwd='passwordA1!',
+	user='akinori',
+	passwd='P@ssw0rd',
 	db='EC',
 	charset='utf8'
 )

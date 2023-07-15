@@ -3,6 +3,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
 #フォームのデータ取得
@@ -34,13 +35,13 @@ if not_match:
 	    </body>
 	</html>
     '''
-    
+
 else:
     htmlText = '''
 	<!DOCTYPE html>
 	<html lang="ja">
 	    <head>
-	    
+
 		<meta charset="utf-8">
 		<title>パスワードの変更</title>
 	    </head>
@@ -52,7 +53,7 @@ else:
 			<input type="hidden" name="email" value="%s">
 			<input type="submit" name="submit" value="送信">
 		</form>
-	 
+
 	    </body>
 	</html>
 	'''%(email)

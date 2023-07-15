@@ -3,6 +3,7 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
 
@@ -11,11 +12,16 @@ form = cgi.FieldStorage()
 email = form.getfirst('email')
 password = form.getfirst('password')
 
+
+# セッション処理
+session = session.Session(cookies.SimpleCookie(os.environ.get('HTTP_COOKIE','')))
+session.sessionProcess(email)
+
 #データベース名など自分のものに変更
 connection = MySQLdb.connect(
 	host='localhost',
-	user='user1',
-	passwd='passwordA1!',
+	user='akinori',
+	passwd='P@ssw0rd',
 	db='EC',
 	charset='utf8'
 )
@@ -38,18 +44,22 @@ if (email != None):
             ch_login = 1
         else:
             not_match_pass = "メールアドレスかパスワードが違います。<br>再度入力して下さい。<br>"
+            session.login_status = 0
     else:
         no_account = "アカウントがありません。<br>新規作成(無料)してください。<br>"
+        session.login_status = 0
 #----------------------------------------------------------------
 # HTML部
 
 print("Content-Type: text/html")
+print(session.setSessionId())
+print(session.setSessionUser())
 
 #ログイン時の表示・ページ移動
-if ch_login:
+if ch_login or session.login_status == 1:
     	htmlText = '''
     	<!DOCTYPE html>
-	<html lang="ja">
+		<html lang="ja">
 	    <head>
 		<meta charset="utf-8">
 		<title>ログイン</title>
@@ -73,7 +83,7 @@ else:
 		<meta charset="utf-8">
 		<title>ログイン完了</title>
 	    </head>
-		
+
 	    <body>
 	        %s
 	        %s

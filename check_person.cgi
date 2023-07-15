@@ -3,12 +3,33 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 
 import smtplib
 from email.mime.multipart import  MIMEMultipart
 from email.mime.text import MIMEText
 #----------------------------------------------------------------
 # 処理
+import subprocess
+
+def send_email(sender, recipient, subject, message):
+    # メールのコマンドラインを作成
+    command = 'echo "{message}" | mail -s "{subject}" -r "{sender}" "{recipient}"'
+    command = command.format(message=message, subject=subject, sender=sender, recipient=recipient)
+
+    # コマンドを実行してメールを送信
+    try:
+        subprocess.check_output(command, shell=True)
+    except subprocess.CalledProcessError as e:
+        pass
+
+# メールを送信する
+sender = "c0a21145c2@edu.teu.ac.jp"
+recipient = "c0a21145c2@edu.teu.ac.jp"
+subject = "テストメール"
+message = "本文"
+
+send_email(sender, recipient, subject, message)
 
 #フォームのデータ取得
 form = cgi.FieldStorage()
@@ -17,8 +38,8 @@ email = form.getfirst('email')
 #データベース名など自分のものに変更
 connection = MySQLdb.connect(
 	host='localhost',
-	user='user1',
-	passwd='passwordA1!',
+	user='akinori',
+	passwd='P@ssw0rd',
 	db='EC',
 	charset='utf8'
 )
@@ -61,35 +82,35 @@ else:
 	for i in range(6):
 	    ch = random.randint(0,9)
 	    check += str(ch)
-	
+
 	#SMTPサーバーに接続
 	smtp_server = "smtp.gmail.com"
 	port = 587
 
 	server = smtplib.SMTP(smtp_server, port)
-	
+
 	#TLS暗号化の設定
 	server.starttls()
-	
+
 	#SMTPサーバーにログイン
-	login_address = "c0a2103528@edu.teu.ac.jp"
-	login_password = "fantrvltjekvvkvf"
+	login_address = "c0a21145c2@edu.teu.ac.jp"
+	login_password = "fdfeceneemofzres"
 
 	server.login(login_address, login_password)
-	
+
 	#メールの作成
 	message = MIMEMultipart()
 
 	message["Subject"] = "本人確認"
-	message["From"] = "c0a2103528@edu.teu.ac.jp"
+	message["From"] = "c0a21145c2@edu.teu.ac.jp"
 	message["To"] = email
-	
+
 	text = MIMEText("本人確認用コード：" + check)
 	message.attach(text)
-	
+
 	#メールの送信
 	server.send_message(message)
-	
+
 	#SMTPサーバーの切断
 	server.quit()
 

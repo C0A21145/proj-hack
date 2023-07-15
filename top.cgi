@@ -53,7 +53,7 @@ if session.login_status == 1:
     '''
     for row in rows:
         # 商品画像のパスはimgs + merchandise_id + jpg
-        merchandise_img = "./imgs/" + str(row[0]) + ".png"
+        merchandise_img = "./imgs/products/" + str(row[0]) + ".jpg"
         merchandise_id = row[0]
         merchandise_name = row[1]
         price = row[2]

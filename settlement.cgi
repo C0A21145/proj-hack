@@ -3,8 +3,12 @@ import cgi
 import MySQLdb
 from http import cookies
 import random, string, os
+import session
 #----------------------------------------------------------------
 # 処理
+# セッション処理
+session = session.Session(cookies.SimpleCookie(os.environ.get('HTTP_COOKIE','')))
+session.sessionProcess()
 # sql接続
 connection = MySQLdb.connect(
     host='localhost',
@@ -25,46 +29,61 @@ card_security_num = rows[0][1]
 #----------------------------------------------------------------
 # HTML部
 print("Content-Type: text/html")
-htmlText = '''
-<!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <title>sample file</title>
-    </head>
+print(session.setSessionId())
+print(session.setSessionUser())
+if session.login_status == 1:
+    htmlText = '''
+    <!DOCTYPE html>
+    <html lang="ja">
+        <head>
+            <meta charset="utf-8">
+            <title>sample file</title>
+        </head>
 
-    <body>
-        <form action="#" id="form">
-        <div class="selector-box">
-            <h1>決済ページ</h1>
-            <h2>支払い情報の選択</h2>
-            <div class="credit">
-                <p>クレジットカード番号</p>
-                <p>%s</p>
-                <p>セキュリティ番号</p>
-                <input type="text" name="security_num"><br>
+        <body>
+            <form action="#" id="form">
+            <div class="selector-box">
+                <h1>決済ページ</h1>
+                <h2>支払い情報の選択</h2>
+                <div class="credit">
+                    <p>クレジットカード番号</p>
+                    <p>%s</p>
+                    <p>セキュリティ番号</p>
+                    <input type="text" name="security_num"><br>
+                </div>
+                <div class="confirm-button">
+                    <input type="submit" value="決済">
+                </div>
             </div>
-            <div class="confirm-button">
-                <input type="submit" value="決済">
-            </div>
-        </div>
-        </form>
+            </form>
 
-        <script>
-        document.getElementById("form").onsubmit = function(event) {
-            event.preventDefault();
-            let security = document.getElementById("form").security_num.value;
-            if (security == %s) {
-                location = "./top.cgi"
-            } else {
-                alert(%s, security)
+            <script>
+            document.getElementById("form").onsubmit = function(event) {
+                event.preventDefault();
+                let security = document.getElementById("form").security_num.value;
+                if (security == %s) {
+                    location = "./top.cgi"
+                } else {
+                    alert(%s, security)
+                }
             }
-        }
-        </script>
-    </body>
-</html>
-'''%(card_num, card_security_num, card_security_num)
+            </script>
+        </body>
+    </html>
+    '''%(card_num, card_security_num, card_security_num)
+else:
+    htmlText = '''
+    	<!DOCTYPE html>
+		<html lang="ja">
+	    <head>
+		<meta charset="utf-8">
+		<title>ログイン</title>
+		<! content秒後にページ移動 ->
+		<META http-equiv="Refresh" content="0.5;URL=login.cgi">
+	    </head>
 
+	    </html>
+    	'''
 
 print(htmlText.encode("utf-8", 'ignore').decode('utf-8'))
 (END)
