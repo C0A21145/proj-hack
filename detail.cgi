@@ -11,6 +11,7 @@ import random, string, os
 form = cgi.FieldStorage()
 review = form.getfirst("review")
 star_num = form.getfirst("star_num")
+mer_id = form.getfirst("mer_id")
 print("Content-Type: text/html\n")
 
 #使用するデータベースに接続
@@ -25,16 +26,16 @@ cursor = connection.cursor()
 
 
 #商品DBから詳細を表示する商品の情報を取得する
-sql_mer = "select * from Merchandise where merchandise_id=1;"
+sql_mer = "select * from Merchandise where merchandise_id='"+ mer_id + "';"
 cursor.execute(sql_mer)
 rows_mer = cursor.fetchall()
 mer_exp = rows_mer[0]
 
-#カートに追加した商品の情報を取得
-sql_cart = "select * from BuyInfo;"
-cursor.execute(sql_cart)
-rows = cursor.fetchall()
-row = rows[len(rows) -1][1]
+
+#商品画像のパス、商品の名前、商品の説明の変数を定義
+merchandise_img = "./imgs/" + str(mer_exp[0]) + ".png"
+merchandise_name = mer_exp[1]
+merchandise_explain = mer_exp[-1]
 
 #商品をカートに追加した際のページへのパス
 page = "./cart_add.cgi"
@@ -69,21 +70,28 @@ htmlText = '''
         
         <!--商品関係 -->
         <div class="merchandise_detail">
-        <img src=".png" align="top" alt = "ここに商品画像">
+        <img src="%s" align="top" alt = "%s">
         <P>%s</P>
-        '''%(mer_exp[-1])
+        '''%(merchandise_img, merchandise_name, merchandise_explain)
+        
 htmlText += '''
         <form action="%s" method="post" id="cartForm">
         <input type="hidden" name="cart_info_name" value="%s">
         <input type="hidden" name="cart_info" value="%s">
-        <input type="submit" name="cart_submit" value="カートに追加">
+        
+        <!--カートに入れる数量ボタン -->
+        <table border="0" cellspacing="1" cellpadding="0">
+	<td>数量<input name="cnt" type="number" value="1" size="5" max="4294967295"></td>
+        <td><input type="submit" name="cart_submit" value="カートに追加"></td>
+        </table>
         </form>
         </div>
-        '''%(page,row, mer_exp)
+        '''%(page, mer_id, mer_exp)
         
 htmlText += '''
         <!--レビューボックス入力部分 -->
         <form action="./detail.cgi" method="post"><div>
+          <input type="hidden" name="mer_id" value="%s">
           review_wirte_box<br>
             <textarea cols="60" rows="5" name="review"></textarea><br>
             
@@ -103,8 +111,9 @@ htmlText += '''
 		
 	    <!--レビュー書き込みボタン -->
             <input type="submit" value="write">
+            </form>
         </div>
-        '''
+        '''%(mer_id)
         
 #レビュー表示部分 
 for disp_row in reversed(disp_rows):

@@ -25,15 +25,21 @@ cursor = connection.cursor()
 ch_login = 0
 
 pas = ""
+no_account = ""
+not_match_pass = ""
 if (email != None):
     cursor.execute("select * from UserInfo where mail_address='" + email + "'")
     row = cursor.fetchone()
-    
-    #MySQLに登録されているパスワードの先頭にある空白文字の削除
-    pas = row[1].lstrip()
-    if (password == pas):
-        ch_login = 1
 
+    #MySQLに登録されているパスワードの先頭にある空白文字の削除
+    if row != None:
+        pas = row[1].lstrip()
+        if (password == pas):
+            ch_login = 1
+        else:
+            not_match_pass = "メールアドレスかパスワードが違います。<br>再度入力して下さい。<br>"
+    else:
+        no_account = "アカウントがありません。<br>新規作成(無料)してください。<br>"
 #----------------------------------------------------------------
 # HTML部
 
@@ -69,6 +75,8 @@ else:
 	    </head>
 		
 	    <body>
+	        %s
+	        %s
 		<form action="./login.cgi" method="post">
 		<input type="email" name="email" placeholder="メールアドレス"><br>
 		<input type="password" name="password" placeholder="パスワード"><br>
@@ -78,7 +86,7 @@ else:
 		<a href="forgot_pswd.cgi">パスワードを忘れた方はこちら</a><br>
 	    </body>
 	</html>
-	'''
+	'''%(no_account, not_match_pass)
 
 print(htmlText.encode("utf-8", 'ignore').decode('utf-8'))
 (END)

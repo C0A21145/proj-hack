@@ -65,10 +65,19 @@ class Session:
         # cookieに保存
         self.cookie_session_id = new_session_id
 
-        # SQLに保存
-        sql = "insert into Session (`user_id`, `session_id`) values ('" + username + "', '" + new_session_id + "')"
-        self.cursor.execute(sql)
-        self.connection.commit()
+        try:
+            sql = "select session_id from user_id'" + username + "'"
+            self.cursor.execute(sql)
+            self.connection.commit()
+
+            sql = "update Session set session_id = '" + new_session_id + "' where user_id = '" + username + "'"
+            self.cursor.execute(sql)
+            self.connection.commit()
+        except:
+            # SQLに保存
+            sql = "insert into Session (`user_id`, `session_id`) values ('" + username + "', '" + new_session_id + "')"
+            self.cursor.execute(sql)
+            self.connection.commit()
 
     # セッションIDをCookieに保存
     def setSessionId(self):
@@ -78,7 +87,7 @@ class Session:
     def setSessionUser(self):
         return f"Set-Cookie: session_user={self.cookie_session_user}; Expires=Wed, 21 Oct 2025 07:28:00 JST"
 
-    def sessionProcess(self, username):
+    def sessionProcess(self, username=None):
         self.getCookie()
         self.getSQL()
 
@@ -86,8 +95,8 @@ class Session:
             if self.cookie_session_id == self.sql_session_id:
                 self.login_status = 1
             else:
-                self.login_status = 1
-        else:
+                self.login_status = 0
+        if self.login_status == 0:
             if username != None:
                 self.writeSessionId(username)
                 self.cookie_session_user = username
